@@ -2,50 +2,49 @@ from puzzle import Puzzle
 import pygame
 import pygame_gui
 import time
+import colors
 
-screen_size = (1280, 720)
+SCREEN_SIZE = (1280, 720)
 
-
-
-Text=(255,255,255)
-# Color Palette
-    # https://www.canva.com/colors/color-palettes/speckled-eggs/
+#Setup
 pygame.init()
+BASICFONT = pygame.font.Font('FiraCode-Retina.ttf',50)
 
-puzzle = Puzzle("","","",0,0,"left", [])
+puzzle = Puzzle.new(250, 220, 330, 330)
 puzzle.initialize()
 
-
-pygame.display.set_caption('8 Puzzle')
-window_surface = pygame.display.set_mode(screen_size)
-
-background = pygame.Surface(screen_size)
-background.fill(pygame.Color('#0F0F0F'))
-
-manager = pygame_gui.UIManager(screen_size, 'theme.json')
+pygame.display.set_caption('teste')
+window_surface = pygame.display.set_mode(SCREEN_SIZE)
+background = pygame.Surface(SCREEN_SIZE)
+background.fill(pygame.Color(colors.GRAYBG))
+manager = pygame_gui.UIManager(SCREEN_SIZE, 'theme.json')
 
 pygame_gui.core.IWindowInterface.set_display_title(self=window_surface,new_title="8-Puzzle")
 
 
-
-# 
+#Elements
+### title label
 pygame_gui.elements.ui_label.UILabel(manager=manager,
                                      text="8-Puzzle Game",
                                      object_id="#title-game", # (pos-width,pos-height),(width,height)
                                      relative_rect=pygame.Rect((540, 10), (175, 70))
                                      )
 
-
-
+### shuffle button
 button_layout_rect = pygame.Rect((1000, 600), (250, 30))
 shuffle_button = pygame_gui.elements.UIButton(relative_rect=button_layout_rect,
                                              text='Shuffle',
                                              object_id="shuffle-btn",
                                              manager=manager)
 
+### set with initial state button
+set_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((1000, 230), (250, 30)),
+                                             text='Set Puzzle',
+                                             object_id="set-btn",
+                                             manager=manager)
 
+### algorithmOptions DropDown
 dropdown_layout_rect = pygame.Rect((1000, 300), (250, 35))
-
 algorithmOptions = ["A*","Best First", "Branch and Bound"]
 algorithmDropDown = pygame_gui.elements.UIDropDownMenu(options_list=algorithmOptions,
                                                        starting_option=algorithmOptions[0],
@@ -53,76 +52,73 @@ algorithmDropDown = pygame_gui.elements.UIDropDownMenu(options_list=algorithmOpt
                                                        object_id="#algorithm-dropdown",
                                                        manager=manager)
 
+### Search label
 pygame_gui.elements.ui_label.UILabel(parent_element=algorithmDropDown,
                                      manager=manager,
                                      text="Heuristic Search:", # (pos-width,pos-height),(width,height)
                                      relative_rect=pygame.Rect((835, 300), (150, 30)))
 
-
-# message_html = "<b>Digite o estado inicial: </b>"
-
-# 1,2,4,5,8,7,6,0
+### initial state input
+    # message_html = "<b>Digite o estado inicial: </b>"
+    # 1,2,4,5,8,7,6,0
 report_rect = pygame.Rect((1000, 200), (250, 40))
 initial_state = pygame_gui.elements.UITextEntryLine(relative_rect=report_rect,
                                                     manager=manager,
                                                     object_id="#input-state")
 
-
-
+### initial state label
 pygame_gui.elements.ui_label.UILabel(parent_element=initial_state,
                                      manager=manager,
                                      text="Initial State:", # (pos-width,pos-height),(width,height)
                                      relative_rect=pygame.Rect((855, 200), (140, 30)))
 
-# Colocar apos a execução de um algoritmo
-    #report_rect = pygame.Rect((200, 150), (250, 35))
-    # report_window = pygame_gui.windows.UIConfirmationDialog(rect=report_rect,
-    #                                                         manager=manager,
-    #                                                         object_id="#report-window",
-    #                                                         blocking=False,
-    #                                                         window_title="Relatório",
-    #                                                         action_short_name="Okay",
-    #                                                         action_long_desc="Nós visitados: 62           Tempo Gasto: 12.00           Tamanho do caminho:32")
+### alert label
+alert_label = pygame_gui.elements.ui_label.UILabel(
+                                     manager=manager,
+                                     text="",
+                                     relative_rect=pygame.Rect((970, 150), (200, 30)))
 
-#report_window.process_event()
-    # message_html = "<b>Um texto here!!!</b>"
-    # message_window = pygame_gui.windows.UIMessageWindow(rect=report_rect,
-    #                                                     manager=manager,
-    #                                                     window_title="Relatório",
-    #                                                     html_message=message_html)
+def draw_blocks(blocks):
+    for block in blocks:
+        if block['block'] != "0":
+            pygame.draw.rect(window_surface, block['color'], block['rect'])
+            textSurf = BASICFONT.render(block['block'], True, colors.WHITE)
+            textRect = textSurf.get_rect()
+            textRect.center = block['rect'].left+50,block['rect'].top+50
+            window_surface.blit(textSurf, textRect)
+        else:
+            pygame.draw.rect(window_surface, colors.BLACK, block['rect'])
 
-BASICFONT = pygame.font.Font('FiraCode-Retina.ttf',50)
-
-for block in puzzle.blocks:        
-    pygame.draw.rect(window_surface, block['color'], block['rect'])
-    textSurf = BASICFONT.render(block['block'], True, Text)
-    textRect = textSurf.get_rect()
-    textRect.center = block['rect'].left+50,block['rect'].top+50
-    window_surface.blit(textSurf, textRect)
-#time.sleep(30)
+window_surface.blit(background, (0, 0))
 pygame.display.update()
 clock = pygame.time.Clock()
+
 is_running = True
-time.sleep(5)
-
-# while is_running:
-#     time_delta = clock.tick(60)/1000.0
-#     for event in pygame.event.get():
-#         if event.type == pygame.QUIT:
-#             is_running = False
+while is_running:
+    time_delta = clock.tick(60)/1000.0
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            is_running = False
             
-#         if event.type == pygame.USEREVENT:
-#             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-#                 if event.ui_element == shuffle_button:
-#                     if initial_state.get_text() != "":
-#                         print('Bora laaa')
-#             if event.user_type == pygame_gui.UI_DROP_DOWN_MENU_CHANGED:
-#                 if event.ui_element == algorithmDropDown:
-#                     print("Selecionado: ",event.text)
-#         manager.process_events(event)
+        if event.type == pygame.USEREVENT:
+            if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_element == shuffle_button:
+                    puzzle.randomBlocks()
+                elif event.ui_element == set_button:
+                    if not puzzle.setBlocks(initial_state.get_text()):
+                        alert_label.set_text("puzzle text invalid!")
+                    else:
+                        alert_label.set_text("")
+            elif event.user_type == pygame_gui.UI_DROP_DOWN_MENU_CHANGED:
+                if event.ui_element == algorithmDropDown:
+                    print("Selecionado: ",event.text)
+            elif event.user_type == pygame_gui.UI_TEXT_ENTRY_CHANGED and event.ui_element == initial_state:
+                print("")
+        manager.process_events(event)
         
-#     manager.update(time_delta)
-#     window_surface.blit(background, (0, 0))
-#     manager.draw_ui(window_surface)
-
-#     pygame.display.update()
+        
+    manager.update(time_delta)
+    #window_surface.blit(background, (0, 0))
+    manager.draw_ui(window_surface)
+    draw_blocks(puzzle.blocks)
+    pygame.display.update()
