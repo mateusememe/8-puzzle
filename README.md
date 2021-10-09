@@ -7,7 +7,8 @@
 Para instalar o streamlist, use o comando abaixo
 
 ```shell
- pip install streamlit
+ pip install pygame -U
+ pip install pygame_gui -U
 ```
 
 ## Inicialização
@@ -15,5 +16,5 @@ Para instalar o streamlist, use o comando abaixo
 Execute o arquivo `main.py` usando o comando abaixo do streamlit.
 
 ```shell
- streamlit run main.py
+   python main.py
 ```

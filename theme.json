@@ -1,0 +1,63 @@
+{
+   "defaults":
+   {
+      "colours":
+      {
+      },
+      "font":
+      {
+          "name": "montserrat",
+          "size": "14",
+          "bold": "0",
+          "italic": "0"
+      }
+   },
+   "button":
+   {
+      "misc":
+      {
+         "tool_tip_delay": "1.5"
+      }
+   },
+
+   "label":
+   {
+      "colours":
+      {
+         "dark_bg":"#0F0F0F",
+         "normal_bg":"#0F0F0F",
+         "normal_text": "#c5cbd8"
+      }
+   },
+
+   "drop_down_menu":
+   {
+      "misc":
+      {
+         "expand_direction": "down"
+      },
+
+      "colours":
+      {
+         "normal_bg": "#25292e",
+         "hovered_bg": "#35393e"
+      }
+   },
+   "drop_down_menu.#selected_option":
+   {
+      "misc":
+      {
+         "border_width": "1.5"
+      }
+   },
+   "title-game":
+   {
+      "font":
+      {
+         "name": "arial",
+         "size": "24",
+         "bold": "1",
+         "italic": "0"
+      }
+   }
+}
