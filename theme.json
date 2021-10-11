@@ -24,9 +24,9 @@
    {
       "colours":
       {
-         "dark_bg":"#0F0F0F",
-         "normal_bg":"#0F0F0F",
-         "normal_text": "#c5cbd8"
+         "dark_bg":"#BFD7ED",
+         "normal_bg":"#BFD7ED",
+         "normal_text": "#003B73"
       }
    },
 
@@ -39,8 +39,8 @@
 
       "colours":
       {
-         "normal_bg": "#25292e",
-         "hovered_bg": "#35393e"
+         "normal_bg": "#003B73",
+         "hovered_bg": "#003B73"
       }
    },
    "drop_down_menu.#selected_option":

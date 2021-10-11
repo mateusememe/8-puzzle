@@ -10,13 +10,10 @@ SCREEN_SIZE = (1280, 720)
 pygame.init()
 BASICFONT = pygame.font.Font('FiraCode-Retina.ttf',50)
 
-puzzle = Puzzle.new(250, 220, 330, 330)
-puzzle.initialize()
-
 pygame.display.set_caption('teste')
 window_surface = pygame.display.set_mode(SCREEN_SIZE)
 background = pygame.Surface(SCREEN_SIZE)
-background.fill(pygame.Color(colors.GRAYBG))
+background.fill(pygame.Color(colors.BABY_BLUE))
 manager = pygame_gui.UIManager(SCREEN_SIZE, 'theme.json')
 
 pygame_gui.core.IWindowInterface.set_display_title(self=window_surface,new_title="8-Puzzle")
@@ -31,7 +28,7 @@ pygame_gui.elements.ui_label.UILabel(manager=manager,
                                      )
 
 ### shuffle button
-button_layout_rect = pygame.Rect((1000, 600), (250, 30))
+button_layout_rect = pygame.Rect((1000, 260), (250, 30))
 shuffle_button = pygame_gui.elements.UIButton(relative_rect=button_layout_rect,
                                              text='Shuffle',
                                              object_id="shuffle-btn",
@@ -44,19 +41,24 @@ set_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((1000, 230),
                                              manager=manager)
 
 ### algorithmOptions DropDown
-dropdown_layout_rect = pygame.Rect((1000, 300), (250, 35))
-algorithmOptions = ["A*","Best First", "Branch and Bound"]
+dropdown_layout_rect = pygame.Rect((1000, 600), (250, 35))
+algorithmOptions = ["A*","Best First"]
 algorithmDropDown = pygame_gui.elements.UIDropDownMenu(options_list=algorithmOptions,
-                                                       starting_option=algorithmOptions[0],
+                                                       starting_option=algorithmOptions[1],
                                                        relative_rect=dropdown_layout_rect,
                                                        object_id="#algorithm-dropdown",
                                                        manager=manager)
+### solve button
+solve_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((1000, 640), (250, 30)),
+                                             text='Solve Puzzle',
+                                             object_id="solve-btn",
+                                             manager=manager)
 
 ### Search label
 pygame_gui.elements.ui_label.UILabel(parent_element=algorithmDropDown,
                                      manager=manager,
                                      text="Heuristic Search:", # (pos-width,pos-height),(width,height)
-                                     relative_rect=pygame.Rect((835, 300), (150, 30)))
+                                     relative_rect=pygame.Rect((835, 600), (150, 30)))
 
 ### initial state input
     # message_html = "<b>Digite o estado inicial: </b>"
@@ -80,19 +82,21 @@ alert_label = pygame_gui.elements.ui_label.UILabel(
 
 def draw_blocks(blocks):
     for block in blocks:
-        if block['block'] != "0":
-            pygame.draw.rect(window_surface, block['color'], block['rect'])
-            textSurf = BASICFONT.render(block['block'], True, colors.WHITE)
+        if block['block'] != 0:
+            pygame.draw.rect(window_surface, colors.BLUE_GROTTO, block['rect'])
+            textSurf = BASICFONT.render(str(block['block']), True, colors.NAVY_BLUE)
             textRect = textSurf.get_rect()
             textRect.center = block['rect'].left+50,block['rect'].top+50
             window_surface.blit(textSurf, textRect)
         else:
-            pygame.draw.rect(window_surface, colors.BLACK, block['rect'])
+            pygame.draw.rect(window_surface, colors.ROYAL_BLUE, block['rect'])
 
 window_surface.blit(background, (0, 0))
 pygame.display.update()
 clock = pygame.time.Clock()
-
+puzzle = Puzzle.new(250, 220, 330, 330)
+puzzle.initialize()
+algorithm = "Best First"
 is_running = True
 while is_running:
     time_delta = clock.tick(60)/1000.0
@@ -109,16 +113,19 @@ while is_running:
                         alert_label.set_text("puzzle text invalid!")
                     else:
                         alert_label.set_text("")
+                elif event.ui_element == solve_button:
+                    if algorithm == "Best First":   
+                        alert_label.set_text(str(puzzle.bestFirst()))
             elif event.user_type == pygame_gui.UI_DROP_DOWN_MENU_CHANGED:
                 if event.ui_element == algorithmDropDown:
-                    print("Selecionado: ",event.text)
+                    algorithm = event.text
             elif event.user_type == pygame_gui.UI_TEXT_ENTRY_CHANGED and event.ui_element == initial_state:
                 print("")
         manager.process_events(event)
         
         
     manager.update(time_delta)
-    #window_surface.blit(background, (0, 0))
+    window_surface.blit(background, (0, 0))
     manager.draw_ui(window_surface)
     draw_blocks(puzzle.blocks)
     pygame.display.update()
