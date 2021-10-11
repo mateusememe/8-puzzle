@@ -1,10 +1,10 @@
 # 8-puzzle
 
-## Configuration
+## Configuração
 
 ### Instalação
 
-Para instalar o streamlist, use o comando abaixo
+Para instalar as dependências, use o comando abaixo em seu shell
 
 ```shell
  pip install pygame -U
@@ -13,7 +13,7 @@ Para instalar o streamlist, use o comando abaixo
 
 ## Inicialização
 
-Execute o arquivo `main.py` usando o comando abaixo do streamlit.
+Execute o arquivo `main.py` usando o comando abaixo para executar o projeto
 
 ```shell
    python main.py

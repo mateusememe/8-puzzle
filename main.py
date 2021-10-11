@@ -1,3 +1,4 @@
+from pygame_gui.core.ui_element import ObjectID
 from puzzle import Puzzle
 import pygame
 import pygame_gui
@@ -10,7 +11,7 @@ SCREEN_SIZE = (1280, 720)
 pygame.init()
 BASICFONT = pygame.font.Font('FiraCode-Retina.ttf',50)
 
-pygame.display.set_caption('teste')
+pygame.display.set_caption('8 Puzzle')
 window_surface = pygame.display.set_mode(SCREEN_SIZE)
 background = pygame.Surface(SCREEN_SIZE)
 background.fill(pygame.Color(colors.BABY_BLUE))
@@ -23,87 +24,57 @@ pygame_gui.core.IWindowInterface.set_display_title(self=window_surface,new_title
 ### title label
 pygame_gui.elements.ui_label.UILabel(manager=manager,
                                      text="8-Puzzle Game",
-                                     object_id="#title-game", # (pos-width,pos-height),(width,height)
-                                     relative_rect=pygame.Rect((540, 10), (175, 70))
+                                     relative_rect=pygame.Rect((540, 10), (300, 70)),
+                                     object_id="#title_box"
                                      )
 
-### shuffle button
-button_layout_rect = pygame.Rect((1000, 260), (250, 30))
-shuffle_button = pygame_gui.elements.UIButton(relative_rect=button_layout_rect,
-                                             text='Shuffle',
-                                             object_id="shuffle-btn",
-                                             manager=manager)
 
 ### set with initial state button
-set_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((1000, 230), (250, 30)),
+set_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((1000, 140), (250, 30)),
                                              text='Set Puzzle',
-                                             object_id="set-btn",
                                              manager=manager)
-                    
-### set final state button
-setFinal_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((1000, 140), (250, 30)),
-                                             text='Set Final State Puzzle',
-                                             object_id="set-final-btn",
+### shuffle button
+button_layout_rect = pygame.Rect((1000, 270), (250, 30))
+shuffle_button = pygame_gui.elements.UIButton(relative_rect=button_layout_rect,
+                                             text='Shuffle',
                                              manager=manager)
 
+### solve button
+solve_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((1000, 640), (250, 45)),
+                                             text='Solve Puzzle',
+                                             manager=manager,
+                                             object_id="#solve_btn")
+
 ### algorithmOptions DropDown
-dropdown_layout_rect = pygame.Rect((1000, 600), (250, 35))
-algorithmOptions = ["A*","Best First"]
+dropdown_layout_rect = pygame.Rect((970, 600), (280, 35))
+algorithmOptions = ["A* (Manhatan Distance)","Best-First (Manhatan Distance)"]
 algorithmDropDown = pygame_gui.elements.UIDropDownMenu(options_list=algorithmOptions,
                                                        starting_option=algorithmOptions[1],
                                                        relative_rect=dropdown_layout_rect,
-                                                       object_id="#algorithm-dropdown",
                                                        manager=manager)
-### solve button
-solve_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((1000, 640), (250, 30)),
-                                             text='Solve Puzzle',
-                                             object_id="solve-btn",
-                                             manager=manager)
 
 ### Search label
 pygame_gui.elements.ui_label.UILabel(parent_element=algorithmDropDown,
                                      manager=manager,
                                      text="Heuristic Search:", # (pos-width,pos-height),(width,height)
-                                     relative_rect=pygame.Rect((835, 600), (150, 30)))
+                                     relative_rect=pygame.Rect((800, 600), (170, 30)))
 
 ### initial state input
-    # message_html = "<b>Digite o estado inicial: </b>"
-    # 1,2,4,5,8,7,6,0
-report_rect = pygame.Rect((1000, 200), (250, 40))
+report_rect = pygame.Rect((1000, 100), (250, 40))
 initial_state = pygame_gui.elements.UITextEntryLine(relative_rect=report_rect,
                                                     manager=manager,
-                                                    object_id="#input-state")
+                                                    )
 
 ### initial state label
 pygame_gui.elements.ui_label.UILabel(parent_element=initial_state,
                                      manager=manager,
                                      text="Initial State:", # (pos-width,pos-height),(width,height)
-                                     relative_rect=pygame.Rect((855, 200), (140, 30)))
-
-### final state input
-report_rect = pygame.Rect((1000, 100), (250, 40))
-final_state = pygame_gui.elements.UITextEntryLine(relative_rect=report_rect,
-                                                    manager=manager,
-                                                    object_id="#input-final-state")
-
-### final state label
-pygame_gui.elements.ui_label.UILabel(parent_element=final_state,
-                                     manager=manager,
-                                     text="Final State:", # (pos-width,pos-height),(width,height)
                                      relative_rect=pygame.Rect((855, 100), (140, 30)))
-
 ### alert label
 alert_label = pygame_gui.elements.ui_label.UILabel(
                                      manager=manager,
                                      text="",
-                                     relative_rect=pygame.Rect((970, 300), (200, 30)))
-
-### alert label
-result_label = pygame_gui.elements.ui_label.UILabel(
-                                     manager=manager,
-                                     text="",
-                                     relative_rect=pygame.Rect((740, 550), (550, 30)))
-
+                                     relative_rect=pygame.Rect((920, 300), (250, 30)))
 
 def draw_blocks(blocks):
     for block in blocks:
@@ -137,9 +108,10 @@ pygame.display.update()
 clock = pygame.time.Clock()
 puzzle = Puzzle.new(250, 220, 330, 330)
 puzzle.initialize()
-algorithm = "Best First"
+algorithm = "Best-First (Manhatan Distance)"
 fstate="1,2,3,4,5,6,7,8,0"
 is_running = True
+
 while is_running:
     time_delta = clock.tick(60)/1000.0
     for event in pygame.event.get():
@@ -152,28 +124,32 @@ while is_running:
                     puzzle.randomBlocks()
                 elif event.ui_element == set_button:
                     if not puzzle.setBlocks(initial_state.get_text()):
-                        alert_label.set_text("puzzle text invalid!")
+                        alert_label.set_text("Initial state invalid!")
                     else:
-                        alert_label.set_text("")
-                elif event.ui_element == setFinal_button:
-                    fstate = final_state.get_text()
-                    print(fstate)
-                    if not puzzle.validNumbers(fstate.split(",")):
-                        alert_label.set_text("final state invalid!")
-                    else:
-                        alert_label.set_text("new final state valid!")
+                        alert_label.set_text("Initial state valid!")
+                        
                 elif event.ui_element == solve_button:
-                    if algorithm == "Best First":
+                    if algorithm == "Best-First (Manhatan Distance)":
                         moves = puzzle.bestFirst()
-                        tempo = "tempo gasto: {temp: .5f}".format(temp = puzzle.lastSolveTime)
-                        result_label.set_text("nós visitados: "+str(puzzle.cost)+" | "+tempo+ " | resolução: "+str(len(moves))+" passos")
-                        print(moves)
+                        tempo = "{temp: .5f} seconds".format(temp = puzzle.lastSolveTime)
+                        report_msg = '<b>Visited nodes:</b> '+str(puzzle.cost)+'        <b>Time:</b>'+tempo+ '        <b>Resolution:</b> '+str(len(moves))+' steps'
+                        # Confirmation Box - Report
+                        confirmation_win = pygame_gui.windows.ui_confirmation_dialog.UIConfirmationDialog(rect = pygame.Rect((600, 300), (180, 80)),
+                                                                                                manager = manager,
+                                                                                                action_long_desc = report_msg,
+                                                                                                window_title =algorithm.split(" ")[0] + ' Search Report',
+                                                                                                )
                         solveAnimation(moves)
-                    elif algorithm == "A*":
+                    elif algorithm == "A* (Manhatan Distance)":
                         moves = puzzle.a_star()
-                        tempo = "tempo gasto: {temp: .5f}".format(temp = puzzle.lastSolveTime)
-                        result_label.set_text("nós visitados: "+str(puzzle.cost)+" | "+tempo+ " | resolução: "+str(len(moves))+" passos")
-                        print(moves)
+                        tempo = "{temp: .5f} seconds".format(temp = puzzle.lastSolveTime)
+                        report_msg = '<b>Visited nodes:</b> '+str(puzzle.cost)+'        <b>Time:</b>'+tempo+ '        <b>Resolution:</b> '+str(len(moves))+' steps'
+                        # Confirmation Box - Report
+                        confirmation_win = pygame_gui.windows.ui_confirmation_dialog.UIConfirmationDialog(rect = pygame.Rect((600, 300), (180, 80)),
+                                                                                                manager = manager,
+                                                                                                action_long_desc = report_msg,
+                                                                                                window_title =algorithm.split(" ")[0] + ' Search Report',
+                                                                                                )
                         solveAnimation(moves)
                         
             elif event.user_type == pygame_gui.UI_DROP_DOWN_MENU_CHANGED:
