@@ -10,6 +10,7 @@ class Matrix():
         self.dist = 0
         self.previous = None
         self.move = ""
+        self.cost = 0
     
     def validNumbers(self, numbers):
         valid = False
@@ -106,7 +107,7 @@ class Matrix():
         for i in range(3):
             for j in range(3):
                 if self.matrix[i][j] != 0:
-                    fi, fj = self.getXY(self.matrix[i][j], Final)
+                    fi, fj = self.getXY(self.matrix[i][j], Final.matrix)
                     res += abs(fi - i) + abs(fj - j)
         return res
 

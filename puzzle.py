@@ -7,8 +7,6 @@ import colors
 import numpy as np
 import time
 
-from s import existsIn
-
 class Puzzle:
     
     def __init__(self, x, y, width, height, lastSolveTime, move, cost, matrix,  blocks = []):
@@ -137,7 +135,6 @@ class Puzzle:
         moves = []
         self.cost = n
         if(node.isEqual(final)):
-            moves = []
             moves.append(node.move)
             nd = node.previous
             while nd != None:
@@ -151,35 +148,52 @@ class Puzzle:
         return moves[::-1]
     
     def a_star(self):
-        self.cost = 0
-        root = self.matrix
+        # iniciando timer
+        inicio = time.time()
+
         node = self.matrix
         Mfinal = Matrix(3,3)
         Mfinal.buildMatrix("1,2,3,4,5,6,7,8,0") #1,2,3,4,5,6,7,8,0
-        indexSelected = 0
         final = Mfinal.getMatrix()
         queue = PriorityQueue()
         queue.put(node)
         visitedNodes = []
-        
+        indexSelected = 0
+        n = 1        
         while (not node.isEqual(final) and not queue.empty()):
+            print("a")
             node = queue.get()
             visitedNodes.append(node)
             moves = []
             childNodes = node.getPossibleNodes(moves)
             for i in range(len(childNodes)):
-                if not existsIn(childNodes[i].getMatrix(), visitedNodes):
+                if not self.existsIn(childNodes[i].getMatrix(), visitedNodes):
                     childNodes[i].move = moves[i]
                     childNodes[i].manhattanDist()
                     childNodes[i].setPrevious(node)
-                    childNodes[i].cost = node.manhattanDistCost(childNodes[i])
+                    # Cumulating the cost function
+                    childNodes[i].cost = node.cost + node.manhattanDistCost(childNodes[i])
+                    childNodes[i].dist += childNodes[i].cost
                     queue._put(childNodes[i])
+            n += 1
             auxCost = 0
-            if(len(visitedNodes) > 0):
-                lowestCost = lowestCost[0].cost + lowestCost[0].matrix.dist
-                for index in range(visitedNodes):
-                    auxCost = lowestCost[index].cost + lowestCost[index].matrix.dist
-                    if(auxCost < lowestCost):
-                        lowestCost = auxCost
-                        indexSelected = index
+            
+        moves = []
+        self.cost = n
+        if(node.isEqual(final)):
+            print(node.matrix)
+            print(final)
+            moves.append(node.move)
+            nd = node.previous
+            while nd != None:
+                if nd.move != '':
+                    moves.append(nd.move)
+                nd = nd.previous
                 
+        fim = time.time()
+        self.lastSolveTime = fim-inicio
+        
+        print("tempo gasto {temp: .5f}:".format(temp = fim-inicio))
+        print("nós visitados:",n)
+        
+        return moves[::-1]
