@@ -114,8 +114,10 @@ while is_running:
                     else:
                         alert_label.set_text("")
                 elif event.ui_element == solve_button:
-                    if algorithm == "Best First":   
-                        alert_label.set_text(str(puzzle.bestFirst()))
+                    if algorithm == "Best First":
+                        moves = puzzle.bestFirst()
+                        
+                        alert_label.set_text("nós visitados:", puzzle.cost)
             elif event.user_type == pygame_gui.UI_DROP_DOWN_MENU_CHANGED:
                 if event.ui_element == algorithmDropDown:
                     algorithm = event.text

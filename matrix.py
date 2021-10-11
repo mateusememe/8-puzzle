@@ -84,24 +84,13 @@ class Matrix():
             zero = self.searchBlock(0)
         return possibleNodes
 
-    def getXY(self, value): #returns correct position of "value"
-        if value == 1:
-            return (0, 0)
-        elif value == 2:
-            return (0, 1)
-        elif value == 3:
-            return (0, 2)
-        elif value == 4:
-            return (1, 0)
-        elif value == 5:
-            return (1, 1)
-        elif value == 6:
-            return (1, 2)
-        elif value == 7:
-            return (2, 0)
-        elif value == 8:
-            return (2, 1)
+    def getXY(self, value, matFinal = [[1,2,3],[4,5,6],[7,8,0]]):
+        for x in range(3):
+            for y in range(3):
+                if value == matFinal[x][y]:
+                    return (x,y)
 
+    
     def manhattanDist(self):
         res = 0
         for i in range(3):
@@ -110,6 +99,15 @@ class Matrix():
                     fi, fj = self.getXY(self.matrix[i][j])
                     res += abs(fi - i) + abs(fj - j)
         self.dist = res
+        return res
+    
+    def manhattanDistCost(self, Final):
+        res = 0
+        for i in range(3):
+            for j in range(3):
+                if self.matrix[i][j] != 0:
+                    fi, fj = self.getXY(self.matrix[i][j], Final)
+                    res += abs(fi - i) + abs(fj - j)
         return res
 
     def getMatrix(self):

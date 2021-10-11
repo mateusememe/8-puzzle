@@ -1,30 +1,30 @@
 from random import randint
 from matrix import Matrix
-from queue import PriorityQueue
+from queue import PriorityQueue, Queue
 import random
 import pygame
 import colors
 import numpy as np
+import time
+
+from s import existsIn
 
 class Puzzle:
     
-    def __init__(self, x, y, width, height, state, parent, move, depth, cost, matrix, key,  blocks = []):
-        self.state = state
-        self.parent = parent
-        self.move = move
-        self.depth = depth
-        self.cost = cost
-        self.blocks = blocks
-        self.key = key
-        self.width = width
-        self.height = height
+    def __init__(self, x, y, width, height, lastSolveTime, move, cost, matrix,  blocks = []):
         self.x = x
         self.y = y
+        self.width = width
+        self.height = height
+        self.lastSolveTime = lastSolveTime
+        self.move = move
+        self.cost = cost
         self.matrix = matrix
+        self.blocks = blocks
 
     @staticmethod
     def new(x, y, width, height):
-        return Puzzle(x, y, width, height, "", "", "", 0, 0, Matrix(3,3), "left", [])
+        return Puzzle(x, y, width, height, 0, [], 0, Matrix(3,3), [])
 
     def validNumbers(self, numbers):
         valid = False
@@ -105,8 +105,14 @@ class Puzzle:
                 return True
         return False
 
+    def getCost(self,actual):
+        while(actual > 0):
+            return 1
+
+
     def bestFirst(self):
         #função de avaliação por busca em largura
+        inicio = time.time()
         node = self.matrix
         Mfinal = Matrix(3,3)
         Mfinal.buildMatrix("1,2,3,4,5,6,7,8,0") #1,2,3,4,5,6,7,8,0
@@ -114,7 +120,7 @@ class Puzzle:
         queue = PriorityQueue()
         queue.put(node)
         visitedNodes = []
-
+        n = 1
         
         while(not node.isEqual(final) and not queue.empty()):
             node = queue.get()
@@ -127,7 +133,9 @@ class Puzzle:
                     childNodes[i].manhattanDist()
                     childNodes[i].setPrevious(node)
                     queue._put(childNodes[i])
-            
+            n += 1
+        moves = []
+        self.cost = n
         if(node.isEqual(final)):
             moves = []
             moves.append(node.move)
@@ -136,10 +144,42 @@ class Puzzle:
                 if nd.move != '':
                     moves.append(nd.move)
                 nd = nd.previous
-            return moves[::-1]
-        return []
+        fim = time.time()
+        self.lastSolveTime = fim-inicio
+        print("tempo gasto {temp: .5f}:".format(temp = fim-inicio))
+        print("nós visitados:",n)
+        return moves[::-1]
+    
+    def a_star(self):
+        self.cost = 0
+        root = self.matrix
+        node = self.matrix
+        Mfinal = Matrix(3,3)
+        Mfinal.buildMatrix("1,2,3,4,5,6,7,8,0") #1,2,3,4,5,6,7,8,0
+        indexSelected = 0
+        final = Mfinal.getMatrix()
+        queue = PriorityQueue()
+        queue.put(node)
+        visitedNodes = []
         
-            
-            
-            
-
+        while (not node.isEqual(final) and not queue.empty()):
+            node = queue.get()
+            visitedNodes.append(node)
+            moves = []
+            childNodes = node.getPossibleNodes(moves)
+            for i in range(len(childNodes)):
+                if not existsIn(childNodes[i].getMatrix(), visitedNodes):
+                    childNodes[i].move = moves[i]
+                    childNodes[i].manhattanDist()
+                    childNodes[i].setPrevious(node)
+                    childNodes[i].cost = node.manhattanDistCost(childNodes[i])
+                    queue._put(childNodes[i])
+            auxCost = 0
+            if(len(visitedNodes) > 0):
+                lowestCost = lowestCost[0].cost + lowestCost[0].matrix.dist
+                for index in range(visitedNodes):
+                    auxCost = lowestCost[index].cost + lowestCost[index].matrix.dist
+                    if(auxCost < lowestCost):
+                        lowestCost = auxCost
+                        indexSelected = index
+                
