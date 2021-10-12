@@ -16,6 +16,7 @@ background = pygame.Surface(SCREEN_SIZE)
 background.fill(pygame.Color(colors.BABY_BLUE))
 manager = pygame_gui.UIManager(SCREEN_SIZE, 'theme.json')
 
+# Rights: https://iconmonstr.com/puzzle-19-png/
 programIcon = pygame.image.load('logo.png')
 pygame.display.set_icon(programIcon)
 
