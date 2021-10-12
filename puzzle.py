@@ -9,7 +9,7 @@ import time
 
 class Puzzle:
     
-    def __init__(self, x, y, width, height, lastSolveTime, move, cost, matrix,  blocks = []):
+    def __init__(self, x, y, width, height, lastSolveTime, move, cost, matrix,  blocks = [], final_state = "1,2,3,4,5,6,7,8,0"):
         self.x = x
         self.y = y
         self.width = width
@@ -19,6 +19,7 @@ class Puzzle:
         self.cost = cost
         self.matrix = matrix
         self.blocks = blocks
+        self.final_state = final_state
 
     @staticmethod
     def new(x, y, width, height):
@@ -94,7 +95,7 @@ class Puzzle:
         return False
 
     def initialize(self):
-        blocks =  "1,2,3,4,5,6,7,8,0"
+        blocks = self.final_state
         self.setBlocks(blocks)
 
     def existsIn(self,elem, list = []):
@@ -113,7 +114,7 @@ class Puzzle:
         inicio = time.time()
         node = self.matrix
         Mfinal = Matrix(3,3)
-        Mfinal.buildMatrix("1,2,3,4,5,6,7,8,0") #1,2,3,4,5,6,7,8,0
+        Mfinal.buildMatrix(self.final_state) #1,2,3,4,5,6,7,8,0
         final = Mfinal.getMatrix()
         queue = PriorityQueue()
         queue.put(node)
@@ -143,17 +144,17 @@ class Puzzle:
                 nd = nd.previous
         fim = time.time()
         self.lastSolveTime = fim-inicio
-        print("tempo gasto {temp: .5f}:".format(temp = fim-inicio))
-        print("nós visitados:",n)
+        print("## Best-First ##\n")
+        print("Tempo gasto {temp: .5f}:".format(temp = fim-inicio))
+        print("Tós visitados:",n,"\n")
         return moves[::-1]
     
     def a_star(self):
         # iniciando timer
         inicio = time.time()
-
         node = self.matrix
         Mfinal = Matrix(3,3)
-        Mfinal.buildMatrix("1,2,3,4,5,6,7,8,0") #1,2,3,4,5,6,7,8,0
+        Mfinal.buildMatrix(self.final_state) #1,2,3,4,5,6,7,8,0
         final = Mfinal.getMatrix()
         queue = PriorityQueue()
         queue.put(node)
@@ -161,7 +162,6 @@ class Puzzle:
         indexSelected = 0
         n = 1        
         while (not node.isEqual(final) and not queue.empty()):
-            print("a")
             node = queue.get()
             visitedNodes.append(node)
             moves = []
@@ -181,8 +181,6 @@ class Puzzle:
         moves = []
         self.cost = n
         if(node.isEqual(final)):
-            print(node.matrix)
-            print(final)
             moves.append(node.move)
             nd = node.previous
             while nd != None:
@@ -192,8 +190,8 @@ class Puzzle:
                 
         fim = time.time()
         self.lastSolveTime = fim-inicio
-        
-        print("tempo gasto {temp: .5f}:".format(temp = fim-inicio))
-        print("nós visitados:",n)
+        print("## A* ##\n")
+        print("Tempo gasto {temp: .5f}:".format(temp = fim-inicio))
+        print("Nós visitados:",n,"\n")
         
         return moves[::-1]
